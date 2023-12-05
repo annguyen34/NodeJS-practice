@@ -5,16 +5,32 @@ const authController = require('../controllers/authController');
 
 tourRouter
   .route('/top-5-tours')
-  .get(tourController.aliasTopTours, tourController.getAllTour);
+  .get(
+    authController.protect,
+    tourController.aliasTopTours,
+    tourController.getAllTour
+  );
 
 tourRouter
   .route('/')
   .get(authController.protect, tourController.getAllTour)
-  .post(tourController.createTour);
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour
+  );
 tourRouter
   .route('/:id')
-  .get(tourController.getTour)
-  .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
+  .get(authController.protect, tourController.getTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.updateTour
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.deleteTour
+  );
 
 module.exports = tourRouter;
